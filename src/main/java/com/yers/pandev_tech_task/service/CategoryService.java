@@ -22,7 +22,7 @@ public class CategoryService {
             return "❌ В базе данных нет категорий!";
         }
 
-        StringBuilder tree = new StringBuilder("📂 Дерево категорий:\n");
+        StringBuilder tree = new StringBuilder("\uD83C\uDF33 Дерево категорий:\n\n");
         for (Category root : roots) {
             buildTree(root, tree, 0);
         }
@@ -30,11 +30,17 @@ public class CategoryService {
     }
 
     private void buildTree(Category category, StringBuilder tree, int level) {
-        tree.append("  ".repeat(level))
-                .append(" ➥ ")
-                .append(category.getName())
-                .append("\n");
-
+        if (level == 0) {
+            tree.append("➡\uFE0F")
+                    .append(category.getName())
+                    .append("\n\n");
+        }
+        else {
+            tree.append("  ".repeat(level))
+                    .append(" ↘ ")
+                    .append(category.getName())
+                    .append("\n");
+        }
         for (Category child : category.getChildren()) {
             buildTree(child, tree, level + 1);
         }
