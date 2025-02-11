@@ -22,6 +22,17 @@ public class AuthService {
                 .orElse(Role.User);
     }
 
+public String downgradeRole(Long chatId) {
+        User user = userRepository.findById(chatId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getRole() == Role.User) {
+        return "ℹ️ У вас уже минимальная роль (User).";
+        }
+        user.setRole(Role.User);
+        userRepository.save(user);
+        return "✅ Вы стали пользователем!";
+}
+
 
     public String upgradeToAdmin(Long chatId, String secret) {
         if (!secret.equals(adminSecret)) {
