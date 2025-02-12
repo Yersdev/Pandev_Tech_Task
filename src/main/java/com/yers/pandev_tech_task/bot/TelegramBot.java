@@ -12,14 +12,17 @@ import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * Основной класс Telegram-бота, обрабатывающий команды и файлы.
+ */
 @Component
 @RequiredArgsConstructor
 public class TelegramBot extends TelegramLongPollingBot {
+
     private final CommandHandler commandHandler;
     private final ExcelService excelService;
 
@@ -29,6 +32,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Value("${telegram.bot-username}")
     private String botUsername;
 
+    /**
+     * Обрабатывает входящие обновления от Telegram.
+     *
+     * @param update Объект обновления, содержащий сообщение или документ.
+     */
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
@@ -37,8 +45,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (update.getMessage().hasText()) {
                 String result = commandHandler.handleCommand(chatId, update.getMessage().getText());
 
-                if (result.equals("excel")) {
+                if ("excel".equals(result)) {
                     sendExcelFile(chatId);
+                } else if ("upload".equals(result)) {
+                    Document document = update.getMessage().getDocument();
+                    downloadAndProcessExcel(chatId, document.getFileId());
                 } else {
                     sendMessage(chatId, result);
                 }
@@ -49,8 +60,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-
-
+    /**
+     * Отправляет Excel-файл с категориями пользователю.
+     *
+     * @param chatId Идентификатор чата пользователя.
+     */
     private void sendExcelFile(Long chatId) {
         File file = excelService.exportCategoriesToExcel();
         if (file == null) {
@@ -65,30 +79,35 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(sendDocument);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
             sendMessage(chatId, "❌ Ошибка при отправке файла.");
         }
     }
 
-
+    /**
+     * Загружает и обрабатывает загруженный пользователем Excel-файл.
+     *
+     * @param chatId Идентификатор чата пользователя.
+     * @param fileId Идентификатор файла в Telegram.
+     */
     public void downloadAndProcessExcel(Long chatId, String fileId) {
         try {
-
             org.telegram.telegrambots.meta.api.objects.File file = execute(new GetFile(fileId));
             String fileUrl = "https://api.telegram.org/file/bot" + botToken + "/" + file.getFilePath();
-
             InputStream inputStream = new URL(fileUrl).openStream();
 
             String result = excelService.importCategoriesFromExcel(inputStream);
-
             sendMessage(chatId, result);
         } catch (Exception e) {
-            e.printStackTrace();
             sendMessage(chatId, "❌ Ошибка при загрузке файла!");
         }
     }
 
-
+    /**
+     * Отправляет текстовое сообщение пользователю.
+     *
+     * @param chatId Идентификатор чата пользователя.
+     * @param text   Текст сообщения.
+     */
     public void sendMessage(Long chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
@@ -96,15 +115,25 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Возвращает имя бота, заданное в конфигурации.
+     *
+     * @return Имя бота.
+     */
     @Override
     public String getBotUsername() {
         return botUsername;
     }
 
+    /**
+     * Возвращает токен бота, заданный в конфигурации.
+     *
+     * @return Токен бота.
+     */
     @Override
     public String getBotToken() {
         return botToken;

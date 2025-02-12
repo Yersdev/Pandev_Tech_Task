@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Сервис для аутентификации и управления ролями пользователей.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -18,26 +20,44 @@ public class AuthService {
     @Value("${security.admin-secret}")
     private String adminSecret;
 
+    /**
+     * Получает роль пользователя по его chatId.
+     *
+     * @param chatId ID чата пользователя.
+     * @return Роль пользователя (User или Admin).
+     */
     public Role getUserRole(Long chatId) {
         return userRepository.findById(chatId)
                 .map(User::getRole)
                 .orElse(Role.User);
     }
 
-public String downgradeRole(Long chatId) {
+    /**
+     * Понижает роль пользователя до User.
+     *
+     * @param chatId ID чата пользователя.
+     * @return Сообщение о результате операции.
+     */
+    public String downgradeRole(Long chatId) {
         User user = userRepository.findById(chatId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if (user.getRole() == Role.User) {
-        return "ℹ️ У вас уже минимальная роль (User).";
+            return "ℹ️ У вас уже минимальная роль (User).";
         }
         user.setRole(Role.User);
         userRepository.save(user);
         return "✅ Вы стали пользователем!";
-}
+    }
 
+    /**
+     * Повышает роль пользователя до Admin при вводе корректного секретного слова.
+     *
+     * @param chatId  ID чата пользователя.
+     * @param secret  Секретное слово для получения роли админа.
+     * @return Сообщение о результате операции.
+     */
     public String upgradeToAdmin(Long chatId, String secret) {
-
-        log.info("Upgrading admin secret" + secret);
+        log.info("Upgrading admin secret: " + secret);
         if (!secret.equals(adminSecret)) {
             return "❌ Неверное секретное слово!";
         }
@@ -59,7 +79,11 @@ public String downgradeRole(Long chatId) {
         """, getHelpMessageAdmin());
     }
 
-
+    /**
+     * Возвращает список доступных команд для администратора.
+     *
+     * @return Строка с командами.
+     */
     private String getHelpMessageAdmin() {
         return """
         📌 **Доступные команды для Админа:**

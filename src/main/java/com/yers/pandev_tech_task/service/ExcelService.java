@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,6 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Сервис для экспорта и импорта категорий в формате Excel.
+ */
 @Service
 @RequiredArgsConstructor
 public class ExcelService {
@@ -23,7 +25,9 @@ public class ExcelService {
     private static final String FILE_PATH = DIRECTORY_PATH + "categories.xlsx";
 
     /**
-     * Экспортирует категории в Excel и возвращает путь к файлу.
+     * Экспортирует все категории в Excel-файл.
+     *
+     * @return Файл с экспортированными категориями или null, если данных нет.
      */
     public File exportCategoriesToExcel() {
         List<Category> categories = categoryRepository.findAll();
@@ -45,6 +49,7 @@ public class ExcelService {
         headerRow.createCell(0).setCellValue("Категория");
         headerRow.createCell(1).setCellValue("Родитель");
 
+        // Заполнение файла категориями
         for (Category category : categories) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(category.getName());
@@ -64,7 +69,10 @@ public class ExcelService {
     }
 
     /**
-     * Импортирует категории из Excel.
+     * Импортирует категории из переданного Excel-файла.
+     *
+     * @param inputStream Входной поток файла Excel.
+     * @return Сообщение о результате импорта.
      */
     public String importCategoriesFromExcel(InputStream inputStream) {
         try (Workbook workbook = new XSSFWorkbook(inputStream)) {

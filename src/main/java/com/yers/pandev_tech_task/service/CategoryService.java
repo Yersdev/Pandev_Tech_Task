@@ -5,16 +5,22 @@ import com.yers.pandev_tech_task.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * Сервис для управления категориями и их иерархией.
+ */
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
+    /**
+     * Получает дерево категорий в виде строки.
+     *
+     * @return Структура дерева категорий или сообщение, если категории отсутствуют.
+     */
     @Transactional
     public String getCategoryTree() {
         List<Category> roots = categoryRepository.findByParentIsNull();
@@ -29,13 +35,19 @@ public class CategoryService {
         return tree.toString();
     }
 
+    /**
+     * Рекурсивно строит дерево категорий.
+     *
+     * @param category Категория.
+     * @param tree     Буфер для построения дерева.
+     * @param level    Уровень вложенности категории.
+     */
     private void buildTree(Category category, StringBuilder tree, int level) {
         if (level == 0) {
             tree.append("➡\uFE0F")
                     .append(category.getName())
                     .append("\n\n");
-        }
-        else {
+        } else {
             tree.append("  ".repeat(level))
                     .append(" ↘ ")
                     .append(category.getName())
@@ -46,6 +58,12 @@ public class CategoryService {
         }
     }
 
+    /**
+     * Добавляет дерево категорий, создавая вложенные элементы, если они отсутствуют.
+     *
+     * @param categoryPath Путь категорий в формате "Родитель -> Дочерняя1 -> Дочерняя2".
+     * @return Сообщение об успешном добавлении.
+     */
     @Transactional
     public String addTree(String categoryPath) {
         String[] categories = categoryPath.split("->");
@@ -68,7 +86,12 @@ public class CategoryService {
         return "✅ Дерево категорий успешно добавлено!";
     }
 
-
+    /**
+     * Удаляет категорию и все её подкатегории.
+     *
+     * @param name Название категории.
+     * @return Сообщение о результате удаления.
+     */
     @Transactional
     public String removeCategory(String name) {
         Optional<Category> categoryOptional = categoryRepository.findByName(name);
@@ -81,35 +104,45 @@ public class CategoryService {
         categoryRepository.delete(category);
 
         return "✅ Категория '" + name + "' и все её подкатегории удалены!";
-
     }
 
-
-        @Transactional
-        public String addCategory(String name, String parentName) {
-            if (categoryRepository.findByName(name).isPresent()) {
-                return "❌ Ошибка: категория '" + name + "' уже существует!";
-            }
-
-            Category parent = null;
-            if (parentName != null) {
-                parent = categoryRepository.findByName(parentName)
-                        .orElse(null);
-                if (parent == null) {
-                    return "❌ Ошибка: родительская категория '" + parentName + "' не найдена!";
-                }
-            }
-
-            Category category = new Category();
-            category.setName(name);
-            category.setParent(parent);
-            categoryRepository.save(category);
-
-            return (parent == null) ?
-                    "✅ Добавлена корневая категория: " + name :
-                    "✅ Добавлен дочерний элемент '" + name + "' в '" + parentName + "'";
+    /**
+     * Добавляет новую категорию, либо корневую, либо как дочернюю для указанного родителя.
+     *
+     * @param name       Название новой категории.
+     * @param parentName Название родительской категории (может быть null для корневой).
+     * @return Сообщение о результате операции.
+     */
+    @Transactional
+    public String addCategory(String name, String parentName) {
+        if (categoryRepository.findByName(name).isPresent()) {
+            return "❌ Ошибка: категория '" + name + "' уже существует!";
         }
 
+        Category parent = null;
+        if (parentName != null) {
+            parent = categoryRepository.findByName(parentName)
+                    .orElse(null);
+            if (parent == null) {
+                return "❌ Ошибка: родительская категория '" + parentName + "' не найдена!";
+            }
+        }
+
+        Category category = new Category();
+        category.setName(name);
+        category.setParent(parent);
+        categoryRepository.save(category);
+
+        return (parent == null) ?
+                "✅ Добавлена корневая категория: " + name :
+                "✅ Добавлен дочерний элемент '" + name + "' в '" + parentName + "'";
+    }
+
+    /**
+     * Получает список всех категорий из базы данных.
+     *
+     * @return Список всех категорий.
+     */
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }

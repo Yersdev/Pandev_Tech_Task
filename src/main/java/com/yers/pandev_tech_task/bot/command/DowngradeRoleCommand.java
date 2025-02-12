@@ -1,38 +1,38 @@
 package com.yers.pandev_tech_task.bot.command;
 
 import com.yers.pandev_tech_task.bot.command.proccessor.CommandProcessor;
-import com.yers.pandev_tech_task.service.CategoryService;
+import com.yers.pandev_tech_task.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * Команда "/viewTree" для отображения дерева категорий.
+ * Команда для понижения роли пользователя.
  */
 @Component
 @RequiredArgsConstructor
-public class ViewTreeCommand implements CommandProcessor {
-    private final CategoryService categoryService;
+public class DowngradeRoleCommand implements CommandProcessor {
+    private final AuthService authService;
 
     /**
      * Проверяет, поддерживается ли переданная команда.
      *
      * @param command строка команды
-     * @return {@code true}, если команда равна "/viewTree", иначе {@code false}
+     * @return {@code true}, если команда равна "/downgrade", иначе {@code false}
      */
     @Override
     public boolean supports(String command) {
-        return "/viewTree".equals(command);
+        return command.equals("/downgrade");
     }
 
     /**
-     * Обрабатывает команду и возвращает дерево категорий.
+     * Обрабатывает команду понижения роли пользователя.
      *
      * @param chatId  идентификатор чата пользователя
      * @param command строка команды (не используется в обработке)
-     * @return строковое представление дерева категорий
+     * @return сообщение с результатом выполнения команды
      */
     @Override
     public String process(Long chatId, String command) {
-        return categoryService.getCategoryTree();
+        return authService.downgradeRole(chatId);
     }
 }
