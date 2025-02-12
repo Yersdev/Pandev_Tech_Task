@@ -50,6 +50,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
 
+
     private void sendExcelFile(Long chatId) {
         File file = excelService.exportCategoriesToExcel();
         if (file == null) {
@@ -68,6 +69,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             sendMessage(chatId, "❌ Ошибка при отправке файла.");
         }
     }
+
 
     public void downloadAndProcessExcel(Long chatId, String fileId) {
         try {

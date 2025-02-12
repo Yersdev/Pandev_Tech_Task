@@ -1,13 +1,19 @@
 package com.yers.pandev_tech_task.bot.command.proccessor;
 
+import com.yers.pandev_tech_task.service.AuthService;
 import com.yers.pandev_tech_task.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-public class AddElementCommand implements CommandProcessor{
+public class AddElementCommand extends BaseCommandProcessor{
     private final CategoryService categoryService;
+
+    public AddElementCommand(AuthService authService, CategoryService categoryService) {
+        super(authService);
+        this.categoryService = categoryService;
+    }
+
     @Override
     public boolean supports(String command) {
         return command.startsWith("/addElement");
@@ -16,6 +22,10 @@ public class AddElementCommand implements CommandProcessor{
     @Override
     public String process(Long chatId, String command) {
         String[] parts = command.split(" ", 3); // Исправленный split
+
+        if (!isAdmin(chatId)) {
+            return "❌ У вас нет прав для удаления данных ❌";
+        }
 
         if (parts.length < 2) {
             return "⚠️ Используйте: /addElement <родительская_категория> <дочерняя_категория>";

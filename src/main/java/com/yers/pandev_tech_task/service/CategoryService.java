@@ -109,4 +109,8 @@ public class CategoryService {
                     "✅ Добавлена корневая категория: " + name :
                     "✅ Добавлен дочерний элемент '" + name + "' в '" + parentName + "'";
         }
+
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
     }
+}

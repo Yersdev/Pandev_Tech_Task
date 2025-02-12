@@ -4,12 +4,14 @@ import com.yers.pandev_tech_task.model.Role;
 import com.yers.pandev_tech_task.model.User;
 import com.yers.pandev_tech_task.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final UserRepository userRepository;
 
@@ -33,8 +35,9 @@ public String downgradeRole(Long chatId) {
         return "✅ Вы стали пользователем!";
 }
 
-
     public String upgradeToAdmin(Long chatId, String secret) {
+
+        log.info("Upgrading admin secret" + secret);
         if (!secret.equals(adminSecret)) {
             return "❌ Неверное секретное слово!";
         }
