@@ -2,6 +2,7 @@ package com.yers.pandev_tech_task.bot;
 
 import com.yers.pandev_tech_task.exception.SendMessageException;
 import com.yers.pandev_tech_task.service.ExcelService;
+import com.yers.pandev_tech_task.util.TextsHelperUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -69,7 +70,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     void sendExcelFile(Long chatId) {
         File file = excelService.exportCategoriesToExcel();
         if (file == null) {
-            sendMessage(chatId, "❌ В базе данных нет категорий!");
+            sendMessage(chatId, TextsHelperUtil.noCategoriesInDb());
             return;
         }
 
@@ -80,7 +81,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(sendDocument);
         } catch (TelegramApiException e) {
-            sendMessage(chatId, "❌ Ошибка при отправке файла.");
+            sendMessage(chatId, TextsHelperUtil.problemSendingFile());
         }
     }
 
@@ -99,7 +100,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             String result = excelService.importCategoriesFromExcel(inputStream);
             sendMessage(chatId, result);
         } catch (Exception e) {
-            sendMessage(chatId, "❌ Ошибка при загрузке файла!");
+            sendMessage(chatId, TextsHelperUtil.problemUploadingFile());
         }
     }
 
@@ -116,8 +117,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            //TODO: Показать Даурену
-            throw new SendMessageException("Пройзошла ошибка при отправке сообщение пользователю.");
+            throw new RuntimeException(TextsHelperUtil.errorDuringSendMessage());
         }
     }
 

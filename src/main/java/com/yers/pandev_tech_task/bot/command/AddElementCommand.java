@@ -3,6 +3,7 @@ package com.yers.pandev_tech_task.bot.command;
 import com.yers.pandev_tech_task.bot.BaseCommandProcessor;
 import com.yers.pandev_tech_task.service.AuthService;
 import com.yers.pandev_tech_task.service.CategoryService;
+import com.yers.pandev_tech_task.util.TextsHelperUtil;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,11 +47,11 @@ public class AddElementCommand extends BaseCommandProcessor {
         String[] parts = command.split(" ", 3); // Разделение команды на части
 
         if (!isAdmin(chatId)) {
-            return "❌ У вас нет прав для удаления данных ❌";
+            return TextsHelperUtil.noEnoughRightToDelete() ;
         }
 
         if (parts.length < 2) {
-            return "⚠️ Используйте: /addElement <родительская_категория> <дочерняя_категория>";
+            return TextsHelperUtil.addElementWithChildElement();
         }
 
         String parentCategory = null;

@@ -2,6 +2,7 @@ package com.yers.pandev_tech_task.bot.command;
 
 import com.yers.pandev_tech_task.bot.command.proccessor.CommandProcessor;
 import com.yers.pandev_tech_task.service.AuthService;
+import com.yers.pandev_tech_task.util.TextsHelperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class CheckCommand implements CommandProcessor {
     private final AuthService authService;
 
@@ -38,10 +38,8 @@ public class CheckCommand implements CommandProcessor {
         String[] parts = command.split(" ", 2);
 
         if (parts.length < 2) {
-            return "⚠️ Использование: /check <секретное_слово>";
+            return TextsHelperUtil.warnHowToUsePassword();
         }
-
-        log.info("Получено секретное слово: {}", parts[1]);
 
         return authService.upgradeToAdmin(chatId, parts[1]);
     }

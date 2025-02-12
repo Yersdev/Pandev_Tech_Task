@@ -3,6 +3,7 @@ package com.yers.pandev_tech_task.service;
 import com.yers.pandev_tech_task.model.Category;
 import com.yers.pandev_tech_task.repository.CategoryRepository;
 import com.yers.pandev_tech_task.util.CategoryTreeUtil;
+import com.yers.pandev_tech_task.util.TextsHelperUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ public class CategoryService {
     public String getCategoryTree() {
         List<Category> roots = categoryRepository.findByParentIsNull();
         if (roots.isEmpty()) {
-            return "❌ В базе данных нет категорий!";
+            return TextsHelperUtil.noCategoriesInDb();
         }
 
         StringBuilder tree = new StringBuilder("\uD83C\uDF33 Дерево категорий:\n\n");
@@ -62,7 +63,7 @@ public class CategoryService {
             }
         }
 
-        return "✅ Дерево категорий успешно добавлено!";
+        return TextsHelperUtil.categoriesSuccessfullyAddedInDb();
     }
 
     /**
@@ -76,13 +77,13 @@ public class CategoryService {
         Optional<Category> categoryOptional = categoryRepository.findByName(name);
 
         if (categoryOptional.isEmpty()) {
-            return "❌ Ошибка: категория '" + name + "' не найдена!";
+            return TextsHelperUtil.categoriesNotFound(name);
         }
 
         Category category = categoryOptional.get();
         categoryRepository.delete(category);
 
-        return "✅ Категория '" + name + "' и все её подкатегории удалены!";
+        return TextsHelperUtil.categoriesSuccessfullyRemovedFromDb(name);
     }
 
     /**
@@ -95,7 +96,7 @@ public class CategoryService {
     @Transactional
     public String addCategory(String name, String parentName) {
         if (categoryRepository.findByName(name).isPresent()) {
-            return "❌ Ошибка: категория '" + name + "' уже существует!";
+            return TextsHelperUtil.categoriesParentNameAlreadyExist(name);
         }
 
         Category parent = null;
@@ -103,7 +104,7 @@ public class CategoryService {
             parent = categoryRepository.findByName(parentName)
                     .orElse(null);
             if (parent == null) {
-                return "❌ Ошибка: родительская категория '" + parentName + "' не найдена!";
+                return TextsHelperUtil.categoriesWithParentNameNotFound(parentName);
             }
         }
 
@@ -113,8 +114,8 @@ public class CategoryService {
         categoryRepository.save(category);
 
         return (parent == null) ?
-                "✅ Добавлена корневая категория: " + name :
-                "✅ Добавлен дочерний элемент '" + name + "' в '" + parentName + "'";
+                 TextsHelperUtil.categoriesAddedInRootOfCategory(name) : TextsHelperUtil.categoriesAddedInRootOfCategoryWithChildElement(name , parentName);
+
     }
 
     /**

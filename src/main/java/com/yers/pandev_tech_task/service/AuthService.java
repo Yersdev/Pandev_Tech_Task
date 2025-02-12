@@ -1,8 +1,10 @@
 package com.yers.pandev_tech_task.service;
 
+import com.yers.pandev_tech_task.exception.UserNotFoundException;
 import com.yers.pandev_tech_task.model.Role;
 import com.yers.pandev_tech_task.model.User;
 import com.yers.pandev_tech_task.repository.UserRepository;
+import com.yers.pandev_tech_task.util.TextsHelperUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,13 +41,13 @@ public class AuthService {
      */
     public String downgradeRole(Long chatId) {
         User user = userRepository.findById(chatId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         if (user.getRole() == Role.User) {
-            return "ℹ️ У вас уже минимальная роль (User).";
+            return TextsHelperUtil.alreadyHasUserRole();
         }
         user.setRole(Role.User);
         userRepository.save(user);
-        return "✅ Вы стали пользователем!";
+        return TextsHelperUtil.becameUser();
     }
 
     /**
@@ -57,24 +59,20 @@ public class AuthService {
      */
     public String upgradeToAdmin(Long chatId, String secret) {
         if (!secret.equals(adminSecret)) {
-            return "❌ Неверное секретное слово!";
+            return TextsHelperUtil.wrongPassword();
         }
 
         User user = userRepository.findById(chatId)
-                .orElse(new User(chatId, "Unknown", Role.User));
+                .orElse(new User(chatId, Role.User));
 
         if (user.getRole() == Role.Admin) {
-            return "✅ Вы уже админ!";
+            return TextsHelperUtil.AlreadyAdmin();
         }
 
         user.setRole(Role.Admin);
         userRepository.save(user);
 
-        return String.format("""
-        🎉 ✅ Вы стали админом! 
-        
-        %s
-        """, getHelpMessageAdmin());
+        return String.format(TextsHelperUtil.becameAdmin(), getHelpMessageAdmin());
     }
 
     /**
@@ -83,17 +81,6 @@ public class AuthService {
      * @return Строка с командами.
      */
     private String getHelpMessageAdmin() {
-        return """
-        📌 **Доступные команды для Админа:**
-        
-        🔹 `/viewTree` - Просмотр дерева категорий.
-        🔹 `/addElement <название>` - Добавить корневой элемент.
-        🔹 `/addElement <родитель> <дочерний>` - Добавить подкатегорию.
-        🔹 `/removeElement <название>` - Удалить элемент (и все его подкатегории).
-        🔹 `/download` - Скачать Excel-файл с категориями.
-        🔹 `/upload` - Загрузить Excel-файл с категориями.
-        🔹 `/help` - Показать список доступных команд.
-        
-        ✨ **Бот для управления деревом категорий.**""";
+        return TextsHelperUtil.adminPanel();
     }
 }

@@ -1,6 +1,7 @@
 package com.yers.pandev_tech_task.bot;
 
 import com.yers.pandev_tech_task.bot.command.proccessor.CommandProcessor;
+import com.yers.pandev_tech_task.util.TextsHelperUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -25,6 +26,6 @@ public class CommandHandler {
                 .filter(p -> p.supports(command))
                 .findFirst()
                 .map(p -> p.process(chatId, command))
-                .orElse("❌ Неизвестная команда. Используйте /help для просмотра доступных команд.");
+                .orElse(TextsHelperUtil.wrongCommand());
     }
 }

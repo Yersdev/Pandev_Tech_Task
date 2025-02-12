@@ -2,6 +2,7 @@ package com.yers.pandev_tech_task.service;
 
 import com.yers.pandev_tech_task.model.Category;
 import com.yers.pandev_tech_task.repository.CategoryRepository;
+import com.yers.pandev_tech_task.util.TextsHelperUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -91,16 +92,17 @@ public class ExcelService {
                 }
 
                 if (!categoryRepository.existsByName(categoryName)) {
+
                     Category category = new Category();
                     category.setName(categoryName);
                     category.setParent(parent);
                     categoryRepository.save(category);
                 }
             }
-            return "✅ Категории успешно загружены!";
+            return TextsHelperUtil.fileSuccess();
         } catch (IOException e) {
             e.printStackTrace();
-            return "❌ Ошибка при обработке файла!";
+            return TextsHelperUtil.fileError();
         }
     }
 }

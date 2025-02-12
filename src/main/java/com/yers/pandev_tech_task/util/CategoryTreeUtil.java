@@ -1,10 +1,13 @@
 package com.yers.pandev_tech_task.util;
 
 import com.yers.pandev_tech_task.model.Category;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Утилитный класс для работы с деревом категорий.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CategoryTreeUtil {
 
     /**

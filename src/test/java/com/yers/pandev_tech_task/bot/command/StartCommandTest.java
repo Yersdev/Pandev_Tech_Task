@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Тестирование StartCommand")
 class StartCommandTest {
+
     @Mock
     private CategoryService categoryService;
 
@@ -19,7 +20,7 @@ class StartCommandTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        startCommand = new StartCommand(categoryService);
+        startCommand = new StartCommand();
     }
 
     @Test
