@@ -1,4 +1,4 @@
-package com.yers.pandev_tech_task.bot.command;
+package com.yers.pandev_tech_task.bot;
 
 import com.yers.pandev_tech_task.bot.command.proccessor.CommandProcessor;
 import com.yers.pandev_tech_task.model.Role;

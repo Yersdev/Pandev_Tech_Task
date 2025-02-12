@@ -25,12 +25,4 @@ public class User {
     /** Роль пользователя в системе (по умолчанию {@link Role#User}). */
     @Enumerated(EnumType.STRING)
     private Role role = Role.User;
-
-    /**
-     * Конструктор для создания пользователя без пароля.
-     *
-     * @param id       идентификатор пользователя
-     * @param username имя пользователя
-     * @param role     роль пользователя
-     */
 }

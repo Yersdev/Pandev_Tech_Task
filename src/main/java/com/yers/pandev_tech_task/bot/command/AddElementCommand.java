@@ -1,5 +1,6 @@
 package com.yers.pandev_tech_task.bot.command;
 
+import com.yers.pandev_tech_task.bot.BaseCommandProcessor;
 import com.yers.pandev_tech_task.service.AuthService;
 import com.yers.pandev_tech_task.service.CategoryService;
 import org.springframework.stereotype.Component;

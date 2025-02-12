@@ -2,9 +2,11 @@ package com.yers.pandev_tech_task.service;
 
 import com.yers.pandev_tech_task.model.Category;
 import com.yers.pandev_tech_task.repository.CategoryRepository;
+import com.yers.pandev_tech_task.util.CategoryTreeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -30,32 +32,9 @@ public class CategoryService {
 
         StringBuilder tree = new StringBuilder("\uD83C\uDF33 Дерево категорий:\n\n");
         for (Category root : roots) {
-            buildTree(root, tree, 0);
+            CategoryTreeUtil.buildTree(root, tree, 0);
         }
         return tree.toString();
-    }
-
-    /**
-     * Рекурсивно строит дерево категорий.
-     *
-     * @param category Категория.
-     * @param tree     Буфер для построения дерева.
-     * @param level    Уровень вложенности категории.
-     */
-    private void buildTree(Category category, StringBuilder tree, int level) {
-        if (level == 0) {
-            tree.append("➡\uFE0F")
-                    .append(category.getName())
-                    .append("\n\n");
-        } else {
-            tree.append("  ".repeat(level))
-                    .append(" ↘ ")
-                    .append(category.getName())
-                    .append("\n");
-        }
-        for (Category child : category.getChildren()) {
-            buildTree(child, tree, level + 1);
-        }
     }
 
     /**
