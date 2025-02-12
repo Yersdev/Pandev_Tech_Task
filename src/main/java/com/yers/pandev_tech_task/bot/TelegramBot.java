@@ -1,5 +1,6 @@
 package com.yers.pandev_tech_task.bot;
 
+import com.yers.pandev_tech_task.exception.SendMessageException;
 import com.yers.pandev_tech_task.service.ExcelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,7 +66,7 @@ public class TelegramBot extends TelegramLongPollingBot {
      *
      * @param chatId Идентификатор чата пользователя.
      */
-    private void sendExcelFile(Long chatId) {
+    void sendExcelFile(Long chatId) {
         File file = excelService.exportCategoriesToExcel();
         if (file == null) {
             sendMessage(chatId, "❌ В базе данных нет категорий!");
@@ -115,7 +116,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            //TODO: Показать Даурену
+            throw new SendMessageException("Пройзошла ошибка при отправке сообщение пользователю.");
         }
     }
 

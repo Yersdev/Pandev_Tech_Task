@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthService {
     private final UserRepository userRepository;
 
@@ -57,7 +56,6 @@ public class AuthService {
      * @return Сообщение о результате операции.
      */
     public String upgradeToAdmin(Long chatId, String secret) {
-        log.info("Upgrading admin secret: " + secret);
         if (!secret.equals(adminSecret)) {
             return "❌ Неверное секретное слово!";
         }

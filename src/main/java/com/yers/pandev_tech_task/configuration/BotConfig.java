@@ -1,6 +1,7 @@
 package com.yers.pandev_tech_task.configuration;
 
 import com.yers.pandev_tech_task.bot.TelegramBot;
+import com.yers.pandev_tech_task.exception.TelegramBotRegistrationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -26,7 +27,8 @@ public class BotConfig {
             botsApi.registerBot(telegramBot);
             return botsApi;
         } catch (TelegramApiException e) {
-            throw new RuntimeException("Ошибка при регистрации Telegram-бота", e);
+            //TODO: Показать Даурену
+            throw new TelegramBotRegistrationException("Ошибка при регистрации Telegram-бота");
         }
     }
 }
