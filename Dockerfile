@@ -1,14 +1,22 @@
-# Используем официальный образ OpenJDK
+# Используем официальный образ OpenJDK для сборки
+FROM openjdk:17-jdk-slim AS build
+
+# Устанавливаем необходимые утилиты
+WORKDIR /app
+COPY . .
+RUN ./gradlew clean build --no-daemon
+
+# Этап запуска
 FROM openjdk:17-jdk-slim
 
-# Переменная для JAR-файла
-ARG JAR_FILE=build/libs/Pandev_Tech_Task-0.0.1-SNAPSHOT.jar
-
-# Устанавливаем рабочую директорию внутри контейнера
+# Устанавливаем рабочую директорию
 WORKDIR /opt/app
 
-# Копируем JAR-файл в контейнер
-COPY ${JAR_FILE} app.jar
+# Копируем JAR из предыдущего этапа
+COPY --from=build /app/build/libs/*.jar app.jar
 
-# Команда для запуска приложения
+# Открываем порт приложения (если нужен)
+EXPOSE 8080
+
+# Запускаем приложение
 ENTRYPOINT ["java", "-jar", "app.jar"]

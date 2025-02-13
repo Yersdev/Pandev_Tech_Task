@@ -26,7 +26,7 @@ class ExcelServiceTests {
     private ExcelService excelService;
 
     private Category rootCategory;
-    
+
     private Category childCategory;
 
     @BeforeEach

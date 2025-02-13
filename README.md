@@ -16,10 +16,11 @@
   `/viewTree`
 
 - **Добавление элемента:**
-    - **Корневого элемента:**  
-      `/addElement <название элемента>`
-    - **Дочернего элемента:**  
-      `/addElement <родительский элемент> <дочерний элемент>`
+
+  - **Корневого элемента:**  
+    `/addElement <название элемента>`
+  - **Дочернего элемента:**  
+    `/addElement <родительский элемент> <дочерний элемент>`
 
 - **Удаление элемента (вместе с дочерними):**  
   `/removeElement <название элемента>`
@@ -31,6 +32,7 @@
 >
 > - **Скачивание дерева в Excel:** `/download`
 > - **Загрузка дерева из Excel:** `/upload`
+> - **Админ Панель:** `/check <password>`
 
 ---
 
@@ -47,6 +49,16 @@
 
 ## Запуск проекта
 
+## TelegramBots
+
+# TelegramBot
+
+telegram.bot-token:${TELEGRAM_BOT_TOKEN:7852665315:AAEOAXvEuLHMDxQR9hFwHHbHmtTnluAj81A}
+telegram.bot-username:${TELEGRAM_BOT_USERNAME:Pandev_Tech-Task_bot}
+security.admin-secret:${ADMIN_SECRET:1234}
+
+Если вы хотите стать адмиином то введите /check 1234
+
 ### Локальный запуск
 
 1. **Клонирование репозитория:**
@@ -56,28 +68,26 @@
    cd Pandev_Tech_Task
    ```
 
-2. **Настроить базу данных в `application.yml`:**
-   ```yaml
-   spring:
-     datasource:
-       url: jdbc:postgresql://localhost:5432/dbname
-       username: user
-       password: password
+2. **Настроить базу данных в `application.properties`:**
+
+   ```
+   spring.application.name=Pandev_Tech_Task
+
+   # JPA/Hibernate Properties
+   spring.jpa.hibernate.ddl-auto=update
+   spring.jpa.show-sql=true
+   spring.jpa.properties.hibernate.format_sql=true
+   spring.datasource.url=${DB_URL:jdbc:postgresql://db:5432/mydatabase}
+   spring.datasource.username=${DB_USERNAME:postgres}
+   spring.datasource.password=${DB_PASSWORD:12345678}
+   spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
    ```
 
 3. **Запустить проект:**
    ```bash
-   mvn spring-boot:run
+   docker compose up --build
    ```
-
----
-
-## Тестирование
-
-Запустить тесты можно командой:
-```bash
-mvn test
-```
 
 ---
 
@@ -85,25 +95,7 @@ mvn test
 
 1. **Собрать Docker-образ:**
    ```bash
-   docker build -t pandev-bot .
-   ```
-
-2. **Запустить контейнер:**
-   ```bash
-   docker run -d -p 8080:8080 pandev-bot
-   ```
-
----
-
-## Развертывание
-
-### Развертывание на удаленном сервере
-
-1. Настроить сервер и установить необходимые зависимости (Docker, PostgreSQL).
-2. Скопировать `.env` файл с настройками базы данных и API-токена.
-3. Выполнить команду деплоя:
-   ```bash
-   docker-compose up -d
+   docker compose up --build
    ```
 
 ### CI/CD (если реализовано)
