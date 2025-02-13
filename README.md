@@ -47,8 +47,19 @@
 
 ---
 
-## Запуск проекта
-
+## Процесс Работы
+/start
+![alt text](image-1.png)
+/check 
+![alt text](image-2.png)
+/viewTree
+![alt text](image.png)
+/addElement
+![alt text](image-3.png)
+/removeElement
+![alt text](image-4.png)
+/help
+![alt text](image-5.png)
 ## TelegramBots
 
 # TelegramBot
